@@ -1,0 +1,27 @@
+@"
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtualenvs
+venv/
+env/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data & models (do NOT commit large data or model binaries)
+Algerian_forest_fires_cleaned.csv
+Algerian_forest_fires_dataset_UPDATE.csv
+Models/
+*.pkl
+*.h5
+
+# IDE / OS
+.vscode/
+.DS_Store
+*.log
+"@ | Out-File -Encoding utf8 .gitignore

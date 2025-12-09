@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forest Fire Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result h2 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        .result-value {
+            font-size: 24px;
+            color: #1b5e20;
+            font-weight: bold;
+        }
+        .section-title {
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Forest Fire FWI Prediction</h1>
+        <form method="POST" action="/predictdata">
+            
+            <div class="section-title">Weather Conditions</div>
+            <div class="form-group">
+                <label for="Temperature">Temperature (°C):</label>
+                <input type="number" id="Temperature" name="Temperature" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="RH">Relative Humidity (%):</label>
+                <input type="number" id="RH" name="RH" min="0" max="100" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="Ws">Wind Speed (km/h):</label>
+                <input type="number" id="Ws" name="Ws" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="Rain">Rain (mm):</label>
+                <input type="number" id="Rain" name="Rain" step="0.1" required>
+            </div>
+
+            <div class="section-title">Fire Weather Index (FWI) Codes</div>
+            <div class="form-group">
+                <label for="FFMC">FFMC (Fine Fuel Moisture Code):</label>
+                <input type="number" id="FFMC" name="FFMC" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="DMC">DMC (Duff Moisture Code):</label>
+                <input type="number" id="DMC" name="DMC" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="DC">DC (Drought Code):</label>
+                <input type="number" id="DC" name="DC" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="ISI">ISI (Initial Spread Index):</label>
+                <input type="number" id="ISI" name="ISI" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="BUI">BUI (Buildup Index):</label>
+                <input type="number" id="BUI" name="BUI" step="0.1" required>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button type="submit" style="flex:1;">🔮 Predict FWI</button>
+                <button type="submit" formaction="/explain" formmethod="post" style="flex:1; background:#1976D2;">🧭 Explain (SHAP)</button>
+            </div>
+        </form>
+
+        {% if prediction_result is defined %}
+        <div class="result show">
+            <h2>📊 Prediction Result</h2>
+            <p>Forest Fire Weather Index (FWI):</p>
+            <div class="result-value">{{ "%.2f"|format(prediction_result) }}</div>
+            <p style="font-size: 14px; color: #666; margin-top: 15px;">
+                Higher values indicate increased fire risk.
+            </p>
+        </div>
+        {% endif %}
+        {% if shap_error is defined %}
+        <div style="margin-top:20px; padding:15px; background-color:#ffebee; border-left:4px solid #f44336; border-radius:4px;">
+            <h3 style="color:#c62828; margin-top:0;">⚠️ SHAP Error</h3>
+            <pre style="color:#d32f2f; font-size:12px; overflow-x:auto; background:#fff3e0; padding:10px; border-radius:3px;">{{ shap_error }}</pre>
+        </div>
+        {% endif %}
+        {% if shap_image is defined %}
+        <div style="margin-top:20px; text-align:center;">
+            <h3 style="color:#333;">📈 SHAP Feature Importance Summary</h3>
+            <p style="font-size:12px; color:#666;">Shows how much each feature contributes to predictions</p>
+            <img src="{{ url_for('static', filename=shap_image) }}" alt="SHAP summary" style="width:100%; max-width:800px; border-radius:6px; border:1px solid #ddd;">
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
